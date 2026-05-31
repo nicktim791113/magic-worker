@@ -1,0 +1,23 @@
+{
+  "name": "magic-worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "魔法小工人 Magic Worker — 2.5D 橫向捲軸闖關小遊戲（Phaser + Vite）",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "icons": "node scripts/generate-icons.mjs",
+    "predeploy": "vite build",
+    "deploy": "gh-pages -d dist -t true"
+  },
+  "dependencies": {
+    "phaser": "^4.1.0"
+  },
+  "devDependencies": {
+    "gh-pages": "^6.3.0",
+    "vite": "^8.0.14",
+    "vite-plugin-pwa": "^1.3.0"
+  }
+}
