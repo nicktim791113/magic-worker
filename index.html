@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>魔法小工人 Magic Worker</title>
+    <meta name="description" content="一個 2.5D 橫向捲軸闖關小遊戲" />
+    <meta name="theme-color" content="#4a90d9" />
+    <link rel="icon" type="image/svg+xml" href="/magic-worker/favicon.svg" />
+    <link rel="apple-touch-icon" href="/magic-worker/apple-touch-icon-180.png" />
+    <style>
+      html, body {
+        margin: 0;
+        height: 100%;
+        background: #05080f;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        font-family: "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+        color: #cdd6e3;
+      }
+      h1 { font-size: 16px; font-weight: 600; margin: 10px 0 6px; opacity: 0.85; }
+      #game canvas { box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6); border-radius: 6px; }
+      .hint { font-size: 12px; opacity: 0.6; margin: 10px; text-align: center; }
+      .hint b { color: #ffd479; }
+    </style>
+    <script type="module" crossorigin src="/magic-worker/assets/index-CkmlcXwM.js"></script>
+  <link rel="manifest" href="/magic-worker/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/magic-worker/registerSW.js"></script></head>
+  <body>
+    <h1>🪄 魔法小工人 · Magic Worker</h1>
+    <div id="game"></div>
+    <p class="hint">← → / A D 移動　·　空白鍵 / ↑ / W 跳躍　·　收集金幣抵達 🚩</p>
+  </body>
+</html>
