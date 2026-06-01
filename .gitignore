@@ -3,9 +3,3 @@ dist/
 dev-dist/
 *.log
 .DS_Store
-
-# GitHub Actions 工作流程檔暫時不追蹤：
-# 目前用 `npm run deploy`（gh-pages）部署，不需要它。
-# 之後若要改用 Actions 自動部署，需要有 workflow 權限的 token，
-# 再把下面這行移除、把 .github/workflows/deploy.yml 加回 git 即可。
-/.github/

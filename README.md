@@ -63,23 +63,25 @@ PWA（漸進式網頁應用程式）讓這個網頁可以：
 
 設定在 `vite.config.js` 的 `VitePWA(...)`，圖示由 `npm run icons` 產生。
 
-## 關於部署（GitHub Pages）
+## 關於部署（GitHub Pages — 自動）
 
-部署只要**一行指令**：
+已設定好 **GitHub Actions 自動部署**：只要把程式碼 **`git push` 到 `main` 分支**，
+GitHub 就會自動 `build` 並把網站部署上線，約 1～2 分鐘後
+<https://nicktim791113.github.io/magic-worker/> 就更新了。
+
+平常流程：
 
 ```bash
-npm run deploy
+git add -A
+git commit -m "你的修改說明"
+git push          # 推上去後，GitHub Actions 會自動建置並部署
 ```
 
-它會自動先 `build`，再把建置好的 `dist/` 推到 `gh-pages` 分支，
-GitHub Pages 就會更新線上版（約 1～2 分鐘生效）。
-
-平常開發、改程式 → `git push` 推到 `main`（保存原始碼）；
-想更新線上遊玩的版本 → 跑一次 `npm run deploy`。
+設定檔在 `.github/workflows/deploy.yml`；每次部署進度可在儲存庫的 **Actions** 分頁查看。
 
 > 重要：網址有 `/magic-worker/` 這層子路徑，所以 `vite.config.js` 的
 > `base` 必須是 `"/magic-worker/"`。如果改了儲存庫名稱，這裡要一起改。
 
-> 進階（之後可選）：也可以改用 GitHub Actions「推送即自動部署」，
-> 但需要一組含 `workflow` 權限的 token。現成的設定檔已放在
-> `.github/workflows/deploy.yml`（目前未啟用）。
+> 備用：專案也保留了手動部署指令 `npm run deploy`（用 gh-pages 套件）。
+> 但 Pages 來源已設為「GitHub Actions」，平常用 `git push` 自動部署即可，
+> 這個備用指令通常用不到。
