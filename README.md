@@ -3,7 +3,7 @@
 一個用 **Vite + Phaser 4** 製作的 **2.5D 橫向捲軸闖關**小遊戲。
 支援 **PWA**（可以「安裝」成 App、離線也能玩），並用 **GitHub Actions 自動部署到 GitHub Pages**。
 
-🎮 線上遊玩：`https://<你的帳號>.github.io/magic-worker/`（部署完成後填入）
+🎮 線上遊玩：<https://nicktim791113.github.io/magic-worker/>
 
 ---
 
@@ -39,11 +39,21 @@ npm run dev      # 啟動開發伺服器
 ├─ package.json
 ├─ public/                     ← 直接被複製到網站根目錄的檔案（圖示等）
 ├─ scripts/generate-icons.mjs  ← 產生 PWA 圖示的小程式
+├─ docs/                       ← 開發文件
+│  ├─ 開發工作規則.md          ← 每次開發的標準流程（SOP）
+│  └─ 更新紀錄.md              ← 更新紀錄（Changelog）
 ├─ src/
 │  ├─ main.js                  ← 遊戲總設定
 │  └─ scenes/PlatformerScene.js← 闖關關卡（全中文註解）
 └─ .github/workflows/deploy.yml← 推上 GitHub 後自動部署
 ```
+
+## 開發文件
+
+開發前請先看這兩份（在 `docs/` 資料夾）：
+
+- 📋 [`docs/開發工作規則.md`](docs/開發工作規則.md) — 每次開發的標準流程（備份、更新紀錄、推送）
+- 📝 [`docs/更新紀錄.md`](docs/更新紀錄.md) — 每次改了什麼的紀錄
 
 ## 想自己調整（新手練習）
 
