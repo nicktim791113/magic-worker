@@ -6,33 +6,27 @@
 // 開發者模式（EditorScene）則是用滑鼠去「畫」這份資料的工具。
 //
 // 📐 格子座標怎麼看？
-//   一格 = 64 像素（和場景裡的 TILE 一致）。
-//   col：第幾欄，最左邊是 0，往右越大。
-//   row：第幾列，從「地面」往上算 —— row 0 是最底層（地面那一排），
-//        往上一格是 row 1、再上去 row 2……（越上面數字越大）。
+//   一格 = 64 像素。col：第幾欄（最左 0，往右增）。
+//   row：第幾列，從「地面」往上算（row 0 = 最底層那一排，往上越大）。
 //
-// 🧱 一塊地形、一排金幣都用 { col, row, w } 表示：
-//   從第 col 欄、第 row 列開始，往右連續 w 格。
-//   例：{ col: 0, row: 0, w: 12 } = 從最左邊鋪 12 格地面。
-//
-// 🧍 start.col = 玩家出生在第幾欄。 🚩 goal.col = 終點旗子在第幾欄。
+// 一筆資料的意思：
+//   solids  實心地形：{ col, row, w } 從 col 往右連續 w 格。
+//   coins   金幣：    { col, row, w } 同上。
+//   enemies 敵人：    { col, row, w } 在第 row 列、col~col+w 之間左右巡邏。
+//   movers  移動平台：{ col, row, toCol, toRow } 在(起點格)和(終點格)之間來回。
+//   start.col 玩家出生欄。 goal.col 終點旗子欄。
 // ============================================================
 
-// 內建關卡（第一次玩、或清掉存檔後會用這份）。
-// 第一關是從舊版「寫死的關卡」原封不動轉過來的。
 export const DEFAULT_LEVELS = [
   {
     name: "第一關",
-    cols: 50, // 關卡總長度（幾格）
-    start: { col: 1 }, // 玩家出生欄
-    goal: { col: 49 }, // 終點旗子欄
-    // 實心地形（會擋住玩家、踩得上去）
+    cols: 50,
+    start: { col: 1 },
+    goal: { col: 49 },
     solids: [
-      // --- 地面（row 0），中間留兩個坑讓你跳 ---
-      { col: 0, row: 0, w: 12 }, // 第 12~14 格是坑
-      { col: 15, row: 0, w: 13 }, // 第 28~30 格是坑
+      { col: 0, row: 0, w: 12 },
+      { col: 15, row: 0, w: 13 },
       { col: 31, row: 0, w: 19 },
-      // --- 階梯式浮空平台 ---
       { col: 5, row: 2, w: 3 },
       { col: 9, row: 4, w: 2 },
       { col: 18, row: 2, w: 3 },
@@ -41,7 +35,6 @@ export const DEFAULT_LEVELS = [
       { col: 38, row: 4, w: 2 },
       { col: 43, row: 2, w: 3 },
     ],
-    // 金幣（碰到就收集）
     coins: [
       { col: 2, row: 1, w: 3 },
       { col: 5, row: 3, w: 3 },
@@ -51,6 +44,8 @@ export const DEFAULT_LEVELS = [
       { col: 34, row: 3, w: 3 },
       { col: 43, row: 3, w: 3 },
     ],
+    enemies: [],
+    movers: [],
   },
   {
     name: "第二關",
@@ -73,23 +68,112 @@ export const DEFAULT_LEVELS = [
       { col: 24, row: 1, w: 4 },
       { col: 27, row: 4, w: 3 },
     ],
+    enemies: [{ col: 24, row: 1, w: 7 }],
+    movers: [],
+  },
+  {
+    name: "小心敵人",
+    cols: 44,
+    start: { col: 1 },
+    goal: { col: 43 },
+    solids: [
+      { col: 0, row: 0, w: 10 },
+      { col: 13, row: 0, w: 12 },
+      { col: 27, row: 0, w: 17 },
+      { col: 6, row: 2, w: 2 },
+      { col: 17, row: 2, w: 3 },
+      { col: 20, row: 4, w: 2 },
+      { col: 31, row: 2, w: 3 },
+      { col: 36, row: 3, w: 2 },
+    ],
+    coins: [
+      { col: 2, row: 1, w: 3 },
+      { col: 6, row: 3, w: 2 },
+      { col: 17, row: 3, w: 3 },
+      { col: 20, row: 5, w: 2 },
+      { col: 31, row: 3, w: 3 },
+      { col: 38, row: 1, w: 4 },
+    ],
+    enemies: [
+      { col: 4, row: 1, w: 4 },
+      { col: 14, row: 1, w: 6 },
+      { col: 28, row: 1, w: 8 },
+    ],
+    movers: [],
+  },
+  {
+    name: "跳上平台",
+    cols: 46,
+    start: { col: 1 },
+    goal: { col: 45 },
+    solids: [
+      { col: 0, row: 0, w: 7 },
+      { col: 17, row: 0, w: 9 },
+      { col: 34, row: 0, w: 12 },
+      { col: 30, row: 3, w: 2 },
+    ],
+    coins: [
+      { col: 2, row: 1, w: 3 },
+      { col: 11, row: 2, w: 2 },
+      { col: 21, row: 5, w: 1 },
+      { col: 29, row: 2, w: 2 },
+      { col: 38, row: 1, w: 5 },
+    ],
+    enemies: [{ col: 18, row: 1, w: 6 }],
+    movers: [
+      { col: 8, row: 1, toCol: 15, toRow: 1 },
+      { col: 27, row: 1, toCol: 32, toRow: 1 },
+      { col: 21, row: 1, toCol: 21, toRow: 4 },
+    ],
+  },
+  {
+    name: "大冒險",
+    cols: 60,
+    start: { col: 1 },
+    goal: { col: 59 },
+    solids: [
+      { col: 0, row: 0, w: 9 },
+      { col: 14, row: 0, w: 10 },
+      { col: 28, row: 0, w: 8 },
+      { col: 42, row: 0, w: 18 },
+      { col: 6, row: 2, w: 2 },
+      { col: 18, row: 3, w: 3 },
+      { col: 31, row: 2, w: 3 },
+      { col: 45, row: 2, w: 3 },
+      { col: 50, row: 4, w: 2 },
+    ],
+    coins: [
+      { col: 2, row: 1, w: 3 },
+      { col: 6, row: 3, w: 2 },
+      { col: 18, row: 4, w: 3 },
+      { col: 31, row: 3, w: 3 },
+      { col: 45, row: 3, w: 3 },
+      { col: 50, row: 5, w: 2 },
+      { col: 54, row: 1, w: 5 },
+    ],
+    enemies: [
+      { col: 15, row: 1, w: 8 },
+      { col: 29, row: 1, w: 6 },
+      { col: 44, row: 1, w: 8 },
+    ],
+    movers: [
+      { col: 10, row: 1, toCol: 12, toRow: 3 },
+      { col: 37, row: 1, toCol: 40, toRow: 1 },
+    ],
   },
 ];
 
 // ------------------------------------------------------------
-// 以下是「存檔」相關工具：把編輯器設計的關卡存在瀏覽器裡（localStorage），
-// 這樣下次打開、甚至離線都還在；要正式上線時再「匯出」交給工程師（Claude）存進專案。
+// 存檔工具：把編輯器設計的關卡存在瀏覽器（localStorage）。
 // ------------------------------------------------------------
 
-// 瀏覽器存檔的鑰匙名稱（換版本時改 v1 → v2 可避免吃到舊格式）
 const STORAGE_KEY = "magic-worker.levels.v1";
 
-// 深拷貝：複製一份全新的資料，避免不小心改到內建關卡 DEFAULT_LEVELS
 function clone(data) {
   return JSON.parse(JSON.stringify(data));
 }
 
-// 讀關卡：優先用瀏覽器存檔；沒有存檔（或存檔壞掉）就用內建關卡
+// 讀關卡：優先用瀏覽器存檔；沒有（或壞掉）就用內建關卡
 export function loadLevels() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -103,7 +187,7 @@ export function loadLevels() {
   return clone(DEFAULT_LEVELS);
 }
 
-// 存關卡：把整串關卡寫進瀏覽器（編輯器每次改動都會呼叫一次）
+// 存關卡（編輯器每次改動都會呼叫）
 export function saveLevels(levels) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(levels));
@@ -112,7 +196,7 @@ export function saveLevels(levels) {
   }
 }
 
-// 重設：清掉瀏覽器存檔，回到內建關卡
+// 重設：清掉存檔，回到內建關卡
 export function resetLevels() {
   try {
     localStorage.removeItem(STORAGE_KEY);
@@ -122,8 +206,7 @@ export function resetLevels() {
   return clone(DEFAULT_LEVELS);
 }
 
-// 產生一個「空白新關卡」（編輯器按「新增關卡」時用）。
-// 預設先鋪滿一整排地面，方便馬上有地方站、再慢慢加東西。
+// 產生一個空白新關卡（編輯器「新增關卡」用，預設先鋪滿地面）
 export function makeEmptyLevel(name = "新關卡") {
   return {
     name,
@@ -132,5 +215,7 @@ export function makeEmptyLevel(name = "新關卡") {
     goal: { col: 29 },
     solids: [{ col: 0, row: 0, w: 30 }],
     coins: [],
+    enemies: [],
+    movers: [],
   };
 }
